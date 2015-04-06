@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Scheduled Stories updated in last 60 days</title>
+
+    <script type="text/javascript" src="https://rally1.rallydev.com/apps/2.0/sdk.js"></script>
+
+    <script type="text/javascript">
+        Rally.onReady(function () {
+                Ext.define("CustomApp",{extend:"Rally.app.App",componentCls:"app",items:{html:'<a href="https://help.rallydev.com/apps/2.0/doc/">App SDK 2.0 Docs</a>'},launch:function(){var millisecondsInDay=864e5,currentDate=new Date,startDate=new Date(currentDate-30*millisecondsInDay),startDateUTC=startDate.toISOString(),stories=Ext.create("Rally.data.wsapi.Store",{model:"UserStory",fetch:["Iteration","FormattedID","Name","Project"],filters:[{property:"LastUpdateDate",operator:">",value:startDateUTC},{property:"Iteration",operator:"!=",value:null}]});this._model=Rally.data.ModelFactory.getModel({type:"Iteration"}),stories.load().then({success:this._onStoriesLoaded,scope:this}).then({success:function(results){console.log("results",results)}})},_onStoriesLoaded:function(stories){var promises=[],that=this,storyObj={};return _.each(stories,function(story){var ref=story.get("Iteration")._ref;console.log(ref);var oid=Rally.util.Ref.getOidFromRef(ref);return console.log(oid),Rally.data.ModelFactory.getModel({type:"Iteration",success:function(model){model.load(oid,{fetch:["StartDate","EndDate"],callback:function(iteration){storyObj={FormattedID:story.get("FormattedID"),Name:story.get("Name"),Project:story.get("Project")._refObjectName,Iteration:story.get("Iteration"),StartDate:iteration.get("StartDate"),EndDate:iteration.get("EndDate")},console.log(storyObj),promises.push("storyObj",storyObj)},scope:this})},scope:this})}),Deft.Promise.all(promises)}});
+
+            Rally.launchApp('CustomApp', {
+                name:"Scheduled Stories updated in last 60 days",
+	            parentRepos:""
+            });
+
+        });
+    </script>
+
+
+    <style type="text/css">
+        
+    </style>
+</head>
+<body>
+</body>
+</html>
