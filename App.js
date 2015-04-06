@@ -25,11 +25,6 @@ Ext.define('CustomApp', {
             ]
         });
         
-        this._model = Rally.data.ModelFactory.getModel({
-            type: 'Iteration'
-        });
-        
-        
         stories.load().then({
             success: this._onStoriesLoaded,
             scope: this
@@ -45,9 +40,7 @@ Ext.define('CustomApp', {
         var storyObj = {}
         _.each(stories, function(story) {
             var ref = story.get('Iteration')._ref;
-            console.log(ref);
             var oid = Rally.util.Ref.getOidFromRef(ref);
-            console.log(oid);
             return Rally.data.ModelFactory.getModel({
                 type: 'Iteration',
                 success: function (model) {
@@ -62,8 +55,7 @@ Ext.define('CustomApp', {
                                 "StartDate"     : iteration.get('StartDate'),
                                 "EndDate"       : iteration.get('EndDate'),
                             };
-                            console.log(storyObj);
-                            promises.push('storyObj',storyObj);
+                            promises.push(storyObj);
                         },
                     scope: this
                     });
