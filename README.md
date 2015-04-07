@@ -1,4 +1,4 @@
-Scheduled Stories updated in last 60 days
+Scheduled Stories updated in last x days
 =========================
 
 ## Overview
