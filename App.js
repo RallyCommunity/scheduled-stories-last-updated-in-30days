@@ -1,11 +1,11 @@
 Ext.define('CustomApp', {
     extend: 'Rally.app.App',
     componentCls: 'app',
-    items:{ html:'<a href="https://help.rallydev.com/apps/2.0/doc/">App SDK 2.0 Docs</a>'},
     launch: function() {
         var millisecondsInDay = 86400000;
+        var lookback = 30;
         var currentDate = new Date();
-        var startDate = new Date(currentDate - millisecondsInDay*30); //in the last 90 days
+        var startDate = new Date(currentDate - millisecondsInDay*lookback); 
         var startDateUTC = startDate.toISOString();
         
         var stories = Ext.create('Rally.data.wsapi.Store', {
@@ -30,16 +30,16 @@ Ext.define('CustomApp', {
             scope: this
         }).then({
             success: function(results) {
-                console.log('results',results);
+                this._makeGrid(results);
             },
             failure:function(error){
-                console.log(error);
-            }
+                console.log('oh noes!');
+            },
+            scope:this
         }); 
     },
     _onStoriesLoaded:function(stories){
         var promises = [];
-        var that = this;
         var storyObj = {};
         return Rally.data.ModelFactory.getModel({
             type: 'Iteration'
@@ -67,5 +67,37 @@ Ext.define('CustomApp', {
             },
             scope: this
         });   
+    },
+    _makeGrid:function(results){
+        var store = Ext.create('Rally.data.custom.Store', {
+            data: results,
+            groupField: 'IterationName',
+            pageSize: 1000
+        });
+        var grid = Ext.create('Rally.ui.grid.Grid', {
+            itemId: 'storyGrid',
+            store: store,
+            features: [{ftype:'grouping'}],
+            columnCfgs: [
+                {
+                    text: 'Formatted ID', dataIndex: 'FormattedID', xtype: 'templatecolumn',
+                    tpl: Ext.create('Rally.ui.renderer.template.FormattedIDTemplate')
+                },
+                {
+                    text: 'Name', dataIndex: 'Name'
+                },
+                {
+                    text: 'Start Date', dataIndex: 'StartDate', width: 250
+                },
+                {
+                    text: 'End Date', dataIndex: 'EndDate',width: 250
+                },
+                {
+                    text: 'Project', dataIndex: 'Project'
+                }
+            ]
+        });
+
+        this.add(grid);
     }
 });
