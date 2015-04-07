@@ -80,8 +80,8 @@ Ext.define('CustomApp', {
             features: [{ftype:'grouping'}],
             columnCfgs: [
                 {
-                    text: 'Formatted ID', dataIndex: 'FormattedID', xtype: 'templatecolumn',
-                    tpl: Ext.create('Rally.ui.renderer.template.FormattedIDTemplate')
+                    text: 'Formatted ID', dataIndex: 'FormattedID'//, xtype: 'templatecolumn',
+                    //tpl: Ext.create('Rally.ui.renderer.template.FormattedIDTemplate')
                 },
                 {
                     text: 'Name', dataIndex: 'Name'
