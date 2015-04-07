@@ -3,7 +3,7 @@ Scheduled Stories updated in last x days
 
 ## Overview
 
-This example shows how to use promises to hydrate a reference object
+This example shows how to use [promises](https://help.rallydev.com/apps/2.0/doc/#!/guide/promises) to hydrate a reference object
 
 ![](pic.png)
 
