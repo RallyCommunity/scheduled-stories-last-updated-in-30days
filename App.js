@@ -29,40 +29,43 @@ Ext.define('CustomApp', {
             success: this._onStoriesLoaded,
             scope: this
         }).then({
-            success: function(results){
+            success: function(results) {
                 console.log('results',results);
+            },
+            failure:function(error){
+                console.log(error);
             }
         }); 
     },
     _onStoriesLoaded:function(stories){
         var promises = [];
         var that = this;
-        var storyObj = {}
-        _.each(stories, function(story) {
-            var ref = story.get('Iteration')._ref;
-            var oid = Rally.util.Ref.getOidFromRef(ref);
-            return Rally.data.ModelFactory.getModel({
-                type: 'Iteration',
-                success: function (model) {
-                    model.load(oid, {
-                        fetch: ['StartDate','EndDate'],
-                        callback: function (iteration) {
-                            storyObj = {
+        var storyObj = {};
+        return Rally.data.ModelFactory.getModel({
+            type: 'Iteration'
+        }).then({
+            success: function(model) {
+                return Deft.Promise.all(_.map(stories, function(story) {
+                    var ref = story.get('Iteration')._ref;
+                    var oid = Rally.util.Ref.getOidFromRef(ref);
+                    return model.load(oid, {
+                        fetch: ['Name','StartDate','EndDate']
+                    }).then({
+                        success: function(iteration) {
+                            return {
                                 "FormattedID"   : story.get('FormattedID'),
                                 "Name"          : story.get('Name'),
                                 "Project"       : story.get('Project')._refObjectName,
-                                "Iteration"     : story.get('Iteration'),
+                                "IterationName" : iteration.get('Name'),
                                 "StartDate"     : iteration.get('StartDate'),
-                                "EndDate"       : iteration.get('EndDate'),
+                                "EndDate"       : iteration.get('EndDate')
                             };
-                            promises.push(storyObj);
                         },
-                    scope: this
+                        scope: this
                     });
-                },
+                }));
+            },
             scope: this
-            });
-        });
-        return Deft.Promise.all(promises);
+        });   
     }
 });
